@@ -106,11 +106,15 @@ def generate_testing_features(image_dir, centroids):
 
 
 def test_model(cat_features, dog_features, test_features):
-    Y1 = np.zeros((0, np.shape(cat_features)[0])) 
-    Y2 = np.ones((0, np.shape(dog_features)[0]))
+    Y1 = np.zeros((np.shape(cat_features)[0])) 
+    Y2 = np.ones((np.shape(dog_features)[0]))
+        
     
-    Y = np.vstack(Y(1, Y2))    
+    Y = np.hstack((Y1, Y2)).transpose()
     x = np.vstack((cat_features, dog_features))
+ 
+    print np.shape(Y)
+    print np.shape(x)
  
     gnb = GaussianNB()
     gnb.fit(x, Y)
@@ -119,16 +123,17 @@ def test_model(cat_features, dog_features, test_features):
     
     with open('C:/Data/test_submission.csv', 'wb') as csvfile:
         writer = csv.writer(csvfile, delimiter=',')
-        writer.writerow('id', 'label')        
-        for line in y_predictions:
-            writer.writerow(line)
+        writer.writerow(['id', 'label'])        
+        for i, line in enumerate(y_predictions):
+            print line
+            writer.writerow([i, line])
 
 if __name__ == "__main__":
-    centroids = load_centroids('C:/Data/train/centroids.pickle')
+    #centroids = load_centroids('C:/Data/train/centroids.pickle')
     
     #cats, dogs = generate_training_features('C:/Data/train/', centroids)
     cats, dogs = load_training_features('C:/Data/train/')    
-    testing_features = generate_testing_features('C:/Data/test/', centroids)
-    #testing_features = load_testing_features('C:/Data/test/')
+    #testing_features = generate_testing_features('C:/Data/test/', centroids)
+    testing_features = load_testing_features('C:/Data/')
     
     test_model(cats, dogs, testing_features)
